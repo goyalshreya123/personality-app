@@ -10,19 +10,50 @@ Original file is located at
 import streamlit as st
 import pandas as pd
 import pickle
+import re
 from sklearn.metrics.pairwise import euclidean_distances
 
 # -----------------------------
-# Load saved files
+# CSS Styling (Purple Gradient)
+# -----------------------------
+st.markdown("""
+<style>
+.stApp {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+}
+
+div[data-testid="column"] {
+    background: rgba(255,255,255,0.12);
+    padding: 15px;
+    border-radius: 12px;
+    margin-bottom: 15px;
+}
+
+label {
+    color: white !important;
+    font-weight: 500;
+}
+
+.stButton>button {
+    background-color: #ff7eb3;
+    color: white;
+    border-radius: 10px;
+    padding: 10px 20px;
+    border: none;
+}
+</style>
+""", unsafe_allow_html=True)
+
+# -----------------------------
+# Load files
 # -----------------------------
 rf = pickle.load(open('rf_model.pkl', 'rb'))
 columns = list(pickle.load(open('columns.pkl', 'rb')))
 insights = pickle.load(open('insights.pkl', 'rb'))
 df = pickle.load(open('data.pkl', 'rb'))
 
-# -----------------------------
-# Remove ID column properly
-# -----------------------------
+# Remove ID column from UI
 model_columns = [col for col in columns if "id" not in col.lower()]
 
 # -----------------------------
@@ -35,7 +66,6 @@ name = st.text_input("Your Name")
 
 st.subheader("Answer the questions:")
 
-# Options (1–5 scale)
 options = {
     1: "Strongly Disagree",
     2: "Disagree",
@@ -45,13 +75,17 @@ options = {
 }
 
 user_input = []
-
 cols = st.columns(2)
 i = 0
 
 for col in model_columns:
+
+    # Clean question text
+    clean_question = re.sub(r'^\d+\.\s*', '', col)
+    clean_question = clean_question.replace("*", "")
+
     with cols[i % 2]:
-        st.markdown(f"**{col}**")
+        st.markdown(f"**{clean_question}**")
 
         val = st.radio(
             label="",
@@ -72,27 +106,25 @@ if st.button("Predict"):
     if name.strip() == "":
         st.warning("Please enter your name.")
     else:
-        # Create input dataframe with correct columns
         input_df = pd.DataFrame([user_input], columns=model_columns)
 
-        # Add missing columns (like Student ID) with default value
+        # Add missing columns back
         for col in columns:
             if col not in input_df.columns:
                 input_df[col] = 0
 
-        # Ensure correct column order
         input_df = input_df[columns]
 
         try:
             cluster = rf.predict(input_df)[0]
-            result = insights.get(cluster, None)
+            result = insights.get(cluster)
 
             if result is None:
-                st.error("Something went wrong with prediction.")
+                st.error("Prediction failed.")
             else:
                 st.success(f"🧠 {name}, your Personality: {result['title']}")
 
-                st.subheader("Description")
+                st.subheader("🧠 Analysis")
                 st.write(result['description'])
 
                 st.subheader("Traits")
@@ -107,19 +139,15 @@ if st.button("Predict"):
                 st.write(result['vibe_with'])
 
                 # -----------------------------
-                # Recommendation System
+                # Recommendations
                 # -----------------------------
                 same_cluster = df[df['Cluster'] == cluster]
 
                 if len(same_cluster) > 0:
-                    distances = euclidean_distances(
-                        input_df[columns],
-                        same_cluster[columns]
-                    )
-
+                    distances = euclidean_distances(input_df, same_cluster[columns])
                     nearest_indices = distances[0].argsort()[:5]
-                    recommendations = same_cluster.iloc[nearest_indices]
 
+                    recommendations = same_cluster.iloc[nearest_indices]
                     unique_people = recommendations[['Personality_Type']].drop_duplicates()
 
                     st.subheader("People you will vibe with:")
