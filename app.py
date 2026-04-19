@@ -14,34 +14,58 @@ import re
 from sklearn.metrics.pairwise import euclidean_distances
 
 # -----------------------------
-# CSS Styling (Purple Gradient)
+# 🌊 CSS: Deep Blue Ocean Theme
 # -----------------------------
 st.markdown("""
 <style>
+
+/* Ocean background */
 .stApp {
-    background: linear-gradient(135deg, #667eea, #764ba2);
-    color: white;
+    background: url("https://images.unsplash.com/photo-1507525428034-b723cf961d3e") no-repeat center center fixed;
+    background-size: cover;
 }
 
+/* White text everywhere */
+html, body, [class*="css"] {
+    color: white !important;
+}
+
+/* Titles */
+h1, h2, h3 {
+    color: white !important;
+    font-weight: 700;
+}
+
+/* Question cards */
 div[data-testid="column"] {
-    background: rgba(255,255,255,0.12);
+    background: rgba(0, 0, 0, 0.45);
     padding: 15px;
     border-radius: 12px;
     margin-bottom: 15px;
 }
 
+/* Radio labels */
 label {
     color: white !important;
     font-weight: 500;
 }
 
+/* Button */
 .stButton>button {
-    background-color: #ff7eb3;
+    background-color: black;
     color: white;
     border-radius: 10px;
     padding: 10px 20px;
     border: none;
+    font-weight: bold;
 }
+
+/* Input field */
+input {
+    background-color: rgba(0,0,0,0.6) !important;
+    color: white !important;
+}
+
 </style>
 """, unsafe_allow_html=True)
 
@@ -53,7 +77,7 @@ columns = list(pickle.load(open('columns.pkl', 'rb')))
 insights = pickle.load(open('insights.pkl', 'rb'))
 df = pickle.load(open('data.pkl', 'rb'))
 
-# Remove ID column from UI
+# Remove ID column
 model_columns = [col for col in columns if "id" not in col.lower()]
 
 # -----------------------------
@@ -108,7 +132,7 @@ if st.button("Predict"):
     else:
         input_df = pd.DataFrame([user_input], columns=model_columns)
 
-        # Add missing columns back
+        # Add missing columns
         for col in columns:
             if col not in input_df.columns:
                 input_df[col] = 0
@@ -138,9 +162,7 @@ if st.button("Predict"):
                 st.subheader("You vibe with:")
                 st.write(result['vibe_with'])
 
-                # -----------------------------
                 # Recommendations
-                # -----------------------------
                 same_cluster = df[df['Cluster'] == cluster]
 
                 if len(same_cluster) > 0:
