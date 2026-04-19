@@ -7,6 +7,7 @@ Original file is located at
     https://colab.research.google.com/drive/1tYq_SAjwOxNXF6DZWY28e-rbOIORwB7Y
 """
 
+
 import streamlit as st
 import pandas as pd
 import pickle
@@ -14,18 +15,26 @@ import re
 from sklearn.metrics.pairwise import euclidean_distances
 
 # -----------------------------
-# 🌊 CSS: Deep Blue Ocean Theme
+# 🔥 CSS: Black-Blue Gradient
 # -----------------------------
 st.markdown("""
 <style>
 
-/* Ocean background */
+/* Animated gradient background */
 .stApp {
-    background: url("https://images.unsplash.com/photo-1507525428034-b723cf961d3e") no-repeat center center fixed;
-    background-size: cover;
+    background: linear-gradient(-45deg, #000000, #020024, #1e3cff, #000000);
+    background-size: 400% 400%;
+    animation: gradientShift 12s ease infinite;
 }
 
-/* White text everywhere */
+/* Animation */
+@keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* White text */
 html, body, [class*="css"] {
     color: white !important;
 }
@@ -38,13 +47,13 @@ h1, h2, h3 {
 
 /* Question cards */
 div[data-testid="column"] {
-    background: rgba(0, 0, 0, 0.45);
+    background: rgba(0, 0, 0, 0.6);
     padding: 15px;
     border-radius: 12px;
     margin-bottom: 15px;
 }
 
-/* Radio labels */
+/* Radio text */
 label {
     color: white !important;
     font-weight: 500;
@@ -52,7 +61,7 @@ label {
 
 /* Button */
 .stButton>button {
-    background-color: black;
+    background-color: #111;
     color: white;
     border-radius: 10px;
     padding: 10px 20px;
@@ -60,9 +69,9 @@ label {
     font-weight: bold;
 }
 
-/* Input field */
+/* Input box */
 input {
-    background-color: rgba(0,0,0,0.6) !important;
+    background-color: rgba(0,0,0,0.7) !important;
     color: white !important;
 }
 
@@ -132,7 +141,7 @@ if st.button("Predict"):
     else:
         input_df = pd.DataFrame([user_input], columns=model_columns)
 
-        # Add missing columns
+        # Add missing columns (important for model)
         for col in columns:
             if col not in input_df.columns:
                 input_df[col] = 0
