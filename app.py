@@ -8,6 +8,8 @@ Original file is located at
 """
 
 
+
+
 import streamlit as st
 import pandas as pd
 import pickle
@@ -15,64 +17,62 @@ import re
 from sklearn.metrics.pairwise import euclidean_distances
 
 # -----------------------------
-# 🔥 CSS: Black-Blue Gradient
+# 🔥 CSS: Metallic Black + Red Accent
 # -----------------------------
 st.markdown("""
 <style>
 
-/* Animated gradient background */
+/* Background */
 .stApp {
-    background: linear-gradient(-45deg, #000000, #020024, #1e3cff, #000000);
-    background-size: 400% 400%;
-    animation: gradientShift 12s ease infinite;
+    background: linear-gradient(135deg, #0a0a0a, #111111, #1a1a1a);
 }
 
-/* Animation */
-@keyframes gradientShift {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-}
-
-/* White text */
+/* Text */
 html, body, [class*="css"] {
-    color: white !important;
+    color: #d3d3d3 !important;
 }
 
 /* Titles */
 h1, h2, h3 {
-    color: white !important;
+    color: #e0e0e0 !important;
     font-weight: 700;
 }
 
-/* Question cards */
+/* Cards */
 div[data-testid="column"] {
-    background: rgba(0, 0, 0, 0.6);
+    background: rgba(20, 20, 20, 0.9);
     padding: 15px;
     border-radius: 12px;
     margin-bottom: 15px;
+    border: 1px solid #222;
 }
 
-/* Radio text */
+/* Radio buttons */
+input[type="radio"]:checked {
+    accent-color: #ff2a2a;
+}
+
+/* Labels */
 label {
-    color: white !important;
+    color: #d3d3d3 !important;
     font-weight: 500;
 }
 
 /* Button */
 .stButton>button {
-    background-color: #111;
-    color: white;
+    background: linear-gradient(135deg, #1a1a1a, #300000);
+    color: #e0e0e0;
     border-radius: 10px;
     padding: 10px 20px;
-    border: none;
+    border: 1px solid #400000;
     font-weight: bold;
 }
 
-/* Input box */
+/* Input */
 input {
-    background-color: rgba(0,0,0,0.7) !important;
-    color: white !important;
+    background-color: #111 !important;
+    color: #d3d3d3 !important;
+    border: 1px solid #333;
 }
 
 </style>
@@ -141,7 +141,7 @@ if st.button("Predict"):
     else:
         input_df = pd.DataFrame([user_input], columns=model_columns)
 
-        # Add missing columns (important for model)
+        # Add missing columns
         for col in columns:
             if col not in input_df.columns:
                 input_df[col] = 0
@@ -191,7 +191,3 @@ if st.button("Predict"):
             st.error(f"Error: {e}")
 
 # -----------------------------
-# Footer
-# -----------------------------
-st.markdown("---")
-st.markdown("### Developed by Shreya 💖")
